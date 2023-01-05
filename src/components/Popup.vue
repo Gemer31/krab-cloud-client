@@ -5,7 +5,7 @@
         <div class="popup">
           <div class="popup__header">
             <span>{{title}}</span>
-            <img class="popup__cross" src="../assets/img/cross.svg" @click.prevent="$emit('cross-click')">
+            <img class="popup__cross" src="../assets/img/cross.svg" @click.prevent="$emit('close-click')">
           </div>
           <slot></slot>
           <button @click.prevent="$emit('submit')">{{ buttonText }}</button>
@@ -26,6 +26,9 @@ export default defineComponent({
     buttonText: String,
   },
   setup() {
+
+    return {
+    }
   }
 })
 </script>

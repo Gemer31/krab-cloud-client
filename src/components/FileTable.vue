@@ -20,7 +20,7 @@
 import { computed, defineComponent, } from 'vue';
 import FileRow from "@/components/FileRow";
 import { useStore } from "vuex";
-import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import { onBeforeRouteUpdate, useRouter } from "vue-router";
 
 export default defineComponent( {
   components: {
@@ -29,17 +29,12 @@ export default defineComponent( {
   setup() {
     const $store = useStore();
     const $router = useRouter();
-    const $route = useRoute();
     const breadCrumbs = computed(() => $store.getters.getBreadCrumbs);
     const files = computed(() => $store.getters.getFiles);
 
     onBeforeRouteUpdate((to) => {
       $store.dispatch("loadFiles", { parent: to.params.id });
     });
-    // watch($route.params?.id, (value => {
-    //   console.log(value);
-    //   $store.dispatch("loadFiles", { parent: value });
-    // }));
 
     const onFileClick = (file) => {
       if (file.type === "dir") {

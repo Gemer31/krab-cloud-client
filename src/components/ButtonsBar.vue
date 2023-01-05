@@ -24,7 +24,7 @@
 import { computed, defineComponent, ref, } from 'vue';
 import Popup from "@/components/Popup";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 export default defineComponent({
   components: {
@@ -33,6 +33,7 @@ export default defineComponent({
   setup() {
     const $store = useStore();
     const $router = useRouter();
+    const $route = useRoute();
 
     const popupVisible = ref(false);
     const newDirName = ref("");
@@ -40,6 +41,10 @@ export default defineComponent({
 
     const onCreateDirClick = () => {
       const file = { name: newDirName.value, type: "dir" };
+
+      if ($route?.params.id !== "root") {
+        file.parent = $route?.params.id;
+      }
 
       $store.dispatch("createDir", file)
           .then(() => {
@@ -54,9 +59,9 @@ export default defineComponent({
     }
 
     const onBackClick = () => {
-      const parent = breadCrumbs.value.length
+      const parent = breadCrumbs.value.length > 1
           ? breadCrumbs.value[breadCrumbs.value.length - 1].parent
-          : null
+          : "root";
       $router.push({ name: "folder", params: { id: parent }});
     }
 

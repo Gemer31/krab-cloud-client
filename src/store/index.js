@@ -57,10 +57,7 @@ export default createStore({
         },
         // eslint-disable-next-line no-unused-vars
         registration({ commit }, payload) {
-            return axios.post(`${SERVER}/api/auth/registration`, payload)
-                .then(response => {
-                    console.log(response);
-                })
+            return axios.post(`${SERVER}/api/auth/registration`, payload);
         },
         loadFiles({ commit }, { parent }) {
             axios.get(
@@ -83,7 +80,7 @@ export default createStore({
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } },
             ).then(response => {
                 commit('setFiles', response.data.files);
-                dispatch("loadFiles", { parent: payload.parent });
+                dispatch("loadFiles", { parent: payload.parent || "root" });
             })
         },
         uploadFile({ dispatch, commit }, payload) {

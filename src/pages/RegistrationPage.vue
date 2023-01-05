@@ -25,7 +25,6 @@ export default defineComponent({
     const onRegisterClick = () => {
       $store.dispatch("registration", form)
           .then((response) => {
-            console.log(response);
             eventBus.$emit('showSnack', { type: "success", message: response.data.message, });
             $store.dispatch("login", { email: form.email, password: form.password })
                 .then(() => $router.push({ name: "folder", params: { id: "root" } }))

@@ -6,37 +6,39 @@
     </div>
     <div class="navbar _zone">
       <template v-if="!isAuth">
-        <router-link :to="{ name: 'login' }">Войти</router-link>
-        <router-link :to="{ name: 'registration' }">Регистрация</router-link>
+        <div v-if="$route.name === 'registration'" class="navbar-button" @click="onNavigateClick('login')">Вход</div>
+        <div v-else class="navbar-button" @click="onNavigateClick('registration')">Регистрация</div>
       </template>
-      <div v-else @click="onLogoutClick">Выход</div>
+      <div v-else class="navbar-button" @click="onLogoutClick">Выход</div>
     </div>
   </div>
 </template>
 
 <script>
-import {
-  defineComponent,
-  computed,
-} from 'vue';
+import { computed, defineComponent, watch, } from 'vue';
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 export default defineComponent({
   setup() {
     const $store = useStore();
     const $router = useRouter();
+    const $route = useRoute();
 
     const isAuth = computed(() => $store.getters.getAuth);
     const onLogoutClick = () => {
-      $store.dispatch("logout").then(() => {
-        $router.push({ name: "login" });
-      });
-    }
+      $store.dispatch("logout").then(() => onNavigateClick("login"));
+    };
+    const onNavigateClick = (name) => $router.push({ name });
+
+    watch($route, (value => {
+      console.log($route);
+    }));
 
     return {
       isAuth,
-
+      $route,
+      onNavigateClick,
       onLogoutClick,
     }
   }
@@ -50,6 +52,10 @@ export default defineComponent({
   display: flex;
   align-items: center;
 
+  &-button {
+    cursor: pointer;
+  }
+
   * {
     color: white;
   }
@@ -62,7 +68,7 @@ export default defineComponent({
   }
 
   &._zone {
-    & > {
+    & * {
       margin: 0 8px;
     }
   }
