@@ -10,6 +10,7 @@ import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import CommonForm from "@/components/CommonForm";
+import eventBus from "@/eventBus";
 
 export default defineComponent({
   components: { CommonForm },
@@ -19,9 +20,16 @@ export default defineComponent({
 
     const password = ref("");
     const email = ref("");
+
     const onLoginClick = () => {
       $store.dispatch("login", { email: email.value, password: password.value })
-      .then(() => $router.push({ name: "main" }));
+          .then(() => $router.push({ name: "folder", params: { id: "root" } }))
+          .catch((error) => {
+            eventBus.$emit('showSnack', {
+              type: "error",
+              message: error.response.data.message,
+            });
+          });
     }
 
     return {

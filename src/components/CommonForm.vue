@@ -12,7 +12,9 @@ import {
 } from 'vue';
 
 export default defineComponent({
-  props: ["title"],
+  props: {
+    title: String,
+  },
   setup() {
     return {
 
@@ -22,4 +24,9 @@ export default defineComponent({
 </script>
 
 <style lang="less">
+.common-form {
+  &__error {
+    color: red;
+  }
+}
 </style>

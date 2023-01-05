@@ -11,28 +11,34 @@
 import { defineComponent, reactive } from "vue";
 import CommonForm from "@/components/CommonForm";
 import { useStore } from "vuex";
+import eventBus from "@/eventBus";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   components: { CommonForm },
   setup() {
     const $store = useStore();
+    const $router = useRouter();
 
     const form = reactive({});
 
-    // const password = ref("");
-    // const email = ref("");
-    // const firstName = ref("");
-    // const lastName = ref("");
-
     const onRegisterClick = () => {
       $store.dispatch("registration", form)
+          .then((response) => {
+            console.log(response);
+            eventBus.$emit('showSnack', { type: "success", message: response.data.message, });
+            $store.dispatch("login", { email: form.email, password: form.password })
+                .then(() => $router.push({ name: "folder", params: { id: "root" } }))
+          })
+          .catch((error) => {
+            eventBus.$emit('showSnack', {
+              type: "error",
+              message: error.response.data.message,
+            });
+          })
     };
 
     return {
-      // password,
-      // email,
-      // lastName,
-      // firstName,
       form,
 
       onRegisterClick,

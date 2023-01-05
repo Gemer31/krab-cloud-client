@@ -1,14 +1,14 @@
 import LoginPage from "@/pages/LoginPage";
 import RegistrationPage from "@/pages/RegistrationPage";
 import NotFoundPage from "@/pages/NotFoundPage";
-import MainPage from "@/pages/MainPage";
+import FolderPage from "@/pages/FolderPage";
 import { createRouter, createWebHashHistory } from "vue-router";
 
 const routes = [
     {
-        path: '/',
-        name: 'main',
-        component: MainPage,
+        path: '/folder/:id',
+        name: 'folder',
+        component: FolderPage,
     },
     {
         path: '/login',
