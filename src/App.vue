@@ -1,9 +1,7 @@
 <template>
   <SnackBar/>
-  <div>
-    <NavBar></NavBar>
-    <router-view></router-view>
-  </div>
+  <NavBar></NavBar>
+  <router-view></router-view>
 </template>
 
 <script>
@@ -19,8 +17,7 @@ export default defineComponent({
 
     $store.dispatch("auth");
 
-    return {
-    }
+    return {}
   }
 })
 </script>

@@ -1,18 +1,21 @@
 <template>
-  <div class="table">
+  <div  class="table">
     <div class="table__row">
       <span></span>
       <span>Название</span>
       <span class="table__column-center">Дата</span>
       <span class="table__column-center">Размер</span>
     </div>
-    <file-row
-        class="table__row-file"
-        v-for="file in files"
-        :file="file"
-        :key="file._id"
-        @click="onFileClick(file)"
-    ></file-row>
+    <template v-if="files.length">
+      <file-row
+          class="table__row-file"
+          v-for="file in files"
+          :file="file"
+          :key="file._id"
+          @click="onFileClick(file)"
+      ></file-row>
+    </template>
+    <div class="table__empty" v-else>Папка пуста</div>
   </div>
 </template>
 

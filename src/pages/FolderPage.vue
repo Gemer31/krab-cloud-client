@@ -2,7 +2,6 @@
   <div class="page"
        v-if="!dragEnter"
        @dragenter.prevent.stop="onDragEnter($event)"
-       @dragleave.prevent.stop="onDragLeave($event)"
        @dragover.prevent.stop="onDragEnter($event)"
   >
     <bread-crumbs></bread-crumbs>
@@ -38,28 +37,26 @@ export default defineComponent({
     const dragEnter = ref(false);
 
     const isAuth = computed(() => $store.getters.getAuth);
+    const breadCrumbs = computed(() => $store.getters.getBreadCrumbs);
 
     watch(isAuth, (value => {
       value && $store.dispatch("loadFiles", { parent: $route?.params?.id });
     }));
 
-    const onDragEnter = (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      console.log("enter");
-      dragEnter.value = true;
-    };
-    const onDragLeave = () => {
-      // event.preventDefault();
-      // event.stopPropagation();
-      console.log("leave");
-      // dragEnter.value = false;
-    };
+    const onDragEnter = (event) => dragEnter.value = true;
+    const onDragLeave = () => dragEnter.value = false;
     const onDrop = (event) => {
-      // event.preventDefault();
-      // event.stopPropagation();
+      fileUploadHandler(event);
+      dragEnter.value = false;
+    };
+    const fileUploadHandler = (event) => {
       const files = [...event.dataTransfer.files];
-      console.log(files);
+      files.forEach((file) => {
+        $store.dispatch("uploadFile", {
+          file,
+          parent: breadCrumbs.value.length ? breadCrumbs.value[breadCrumbs.value.length - 1].parent : null,
+        });
+      })
     };
 
     return {
@@ -75,7 +72,11 @@ export default defineComponent({
 
 <style scoped lang="less">
 .drop-area {
-  height: 1000px;
-  width: 1000px;
+  height: calc(100% - 95px);
+  border: dashed;
+  margin: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
