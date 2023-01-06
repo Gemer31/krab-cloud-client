@@ -11,9 +11,16 @@
     <template v-else>
       <span class="table__column-center">{{ date }}</span>
       <span class="table__column-center">{{ size }}</span>
-      <span class="table__column-center">
-        <img class="table__column-center__button" src="../assets/img/download.svg" @click.prevent.stop="onDownloadClick">
-        <img class="table__column-center__button" src="../assets/img/cross.svg" @click.prevent.stop="onDeleteClick">
+      <span class="table__column-end">
+        <img v-if="file.type !== 'dir'"
+             class="table__button"
+             src="../assets/img/download.svg"
+             @click.prevent.stop="onDownloadClick"
+        >
+        <img class="table__button"
+             src="../assets/img/cross.svg"
+             @click.prevent.stop="onDeleteClick"
+        >
       </span>
     </template>
   </div>
@@ -27,6 +34,7 @@ import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import eventBus from "@/eventBus";
 import { getSize } from "@/helpers/file-formatter.helper";
+import { SERVER_URL } from "@/store";
 export default defineComponent( {
   props: ["file"],
   setup(props) {
@@ -42,6 +50,19 @@ export default defineComponent( {
     };
 
     const onDownloadClick = () => {
+      fetch(`${SERVER_URL}/api/files/download?id=${props.file._id}`,
+          { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } },
+      ).then(async (response) => {
+        if (response.status === 200) {
+          const blob = await response.blob();
+          const link = document.createElement("a");
+          link.download = props.file.name;
+          link.href = window.URL.createObjectURL(blob);
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        }
+      })
     };
 
     return {

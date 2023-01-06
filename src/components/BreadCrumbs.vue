@@ -1,17 +1,31 @@
 <template>
   <div class="breadcrumbs">
     <img class="breadcrumbs__return" v-if="breadCrumbs.length" src="../assets/img/return.svg" @click.prevent="onBackClick">
-    <router-link
+    <span
         :class="{ 'breadcrumbs__disabled': breadCrumbs.length === 0, '_main': breadCrumbs.length === 0 }"
-        :to="{ name: 'folder', params: { id: 'root' } }"
-    >Мой диск</router-link>
+        @click.prevent="onBreadCrumbClick('root')"
+    >Мой диск</span>
     <template v-for="( item, index ) in breadCrumbs" :key="item.parent">
       <img src="../assets/img/arrow.svg" alt="">
-      <router-link
+      <span
           :class="{ 'breadcrumbs__disabled': index === (breadCrumbs.length - 1) }"
-          :to="item.parent ? { name: 'folder', params: { id: item.parent } } : {}"
-      >{{ item.name }}</router-link>
+
+          @click.prevent="onBreadCrumbClick(item.parent)"
+      >{{ item.name }}</span>
     </template>
+
+
+<!--    <router-link-->
+<!--        :class="{ 'breadcrumbs__disabled': breadCrumbs.length === 0, '_main': breadCrumbs.length === 0 }"-->
+<!--        :to="{ name: 'folder', params: { id: 'root' } }"-->
+<!--    >Мой диск</router-link>-->
+<!--    <template v-for="( item, index ) in breadCrumbs" :key="item.parent">-->
+<!--      <img src="../assets/img/arrow.svg" alt="">-->
+<!--      <router-link-->
+<!--          :class="{ 'breadcrumbs__disabled': index === (breadCrumbs.length - 1) }"-->
+<!--          :to="item.parent ? { name: 'folder', params: { id: item.parent } } : {}"-->
+<!--      >{{ item.name }}</router-link>-->
+<!--    </template>-->
   </div>
 </template>
 
@@ -25,20 +39,23 @@ export default defineComponent({
   setup() {
     const $store = useStore();
     const $router = useRouter();
-
     const breadCrumbs = computed(() => $store.getters.getBreadCrumbs);
-
 
     const onBackClick = () => {
       const parent = breadCrumbs.value.length > 1
           ? breadCrumbs.value[breadCrumbs.value.length - 1].parent
           : "root";
+      onBreadCrumbClick(parent);
+    }
+    const onBreadCrumbClick = (parent) => {
       eventBus.$emit('animation-change', { name: "slide-right" });
       $router.push({ name: "folder", params: { id: parent }});
     }
 
     return {
       breadCrumbs,
+
+      onBreadCrumbClick,
       onBackClick,
     }
   }
@@ -67,8 +84,8 @@ export default defineComponent({
     }
   }
 
-  & a {
-    text-decoration: none;
+  & span {
+    cursor: pointer;
   }
 
   * {

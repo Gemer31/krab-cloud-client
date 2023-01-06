@@ -7,6 +7,13 @@
     justify-content: center;
   }
 
+  &__button {
+    margin: 0 4px;
+    width: 16px;
+    cursor: pointer;
+    padding: 6px;
+  }
+
   &__row {
     display: grid;
     grid-template-columns: 50px 3fr 1fr 1fr 1fr;
@@ -42,15 +49,14 @@
   }
 
   &__column {
+    &-end {
+      display: flex;
+      justify-content: end;
+      width: 100%;
+    }
+
     &-center {
       margin: auto;
-
-      &__button {
-        margin: 0 4px;
-        width: 16px;
-        cursor: pointer;
-        padding: 6px;
-      }
     }
   }
 }

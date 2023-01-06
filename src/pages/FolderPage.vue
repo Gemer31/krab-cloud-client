@@ -1,8 +1,8 @@
 <template>
-  <div class="page"
+  <div class="folder-page"
        v-if="!dragEnter"
-       @dragenter.prevent.stop="onDragEnter($event)"
-       @dragover.prevent.stop="onDragEnter($event)"
+       @dragenter.prevent.stop="onDragEnter"
+       @dragover.prevent.stop="onDragEnter"
   >
     <div class="folder-page__header">
       <bread-crumbs></bread-crumbs>
@@ -17,9 +17,9 @@
   </div>
   <div v-else
        class="drop-area"
-       @dragenter.prevent.stop="onDragEnter($event)"
-       @dragleave.prevent.stop="onDragLeave($event)"
-       @dragover.prevent.stop="onDragEnter($event)"
+       @dragenter.prevent.stop="onDragEnter"
+       @dragleave.prevent.stop="onDragLeave"
+       @dragover.prevent.stop="onDragEnter"
        @drop.prevent.stop="onDrop($event)"
   >Перетащите файлы</div>
 </template>
@@ -47,6 +47,7 @@ export default defineComponent({
     const searchText = ref("");
     let timer = null;
 
+    const isAuth = computed(() => $store.getters.getAuth);
     const searchChanged = computed({
       get() {
         return searchText.value;
@@ -62,17 +63,15 @@ export default defineComponent({
         }, value.length ? 2000 : 0);
       }
     });
-
-    const isAuth = computed(() => $store.getters.getAuth);
     const availableSpace = computed(() =>
         `${getSize($store.getters.getUser?.usedSpace, 'Mb')}/${getSize($store.getters.getUser?.diskSpace, 'Mb')}`
     );
 
     watch(isAuth, (value => {
       value && $store.dispatch("loadFiles", { parent: $route?.params?.id });
-    }));
+    }), { immediate: true });
 
-    const onDragEnter = (event) => dragEnter.value = true;
+    const onDragEnter = () => dragEnter.value = true;
     const onDragLeave = () => dragEnter.value = false;
     const onDrop = (event) => {
       fileUploadHandler(event);
@@ -104,12 +103,6 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-.folder-page__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .search {
   padding: 6px;
 }
@@ -121,5 +114,19 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.folder-page {
+  height: calc(100% - 65px);
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  & > {
+    padding: 0 20px;
+  }
 }
 </style>

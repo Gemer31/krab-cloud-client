@@ -1,7 +1,7 @@
 import { createStore } from 'vuex'
 import axios from "axios";
 
-const SERVER = "http://localhost:5000";
+export const SERVER_URL = "http://localhost:5000";
 
 export default createStore({
     state() {
@@ -20,12 +20,8 @@ export default createStore({
             store.user = payload?.user;
             store.isAuth = !!payload?.user;
         },
-        setFiles: (store, payload) => {
-            store.files = payload;
-        },
-        setBreadCrumbs: (store, payload) => {
-            store.breadCrumbs = payload;
-        },
+        setFiles: (store, payload) => store.files = payload,
+        setBreadCrumbs: (store, payload) => store.breadCrumbs = payload,
         setFileInLoading: (store, payload) => {
             const file = store.filesInLoading?.find((item) => payload._id === item._id);
             if (file) {
@@ -34,9 +30,7 @@ export default createStore({
                 store.filesInLoading = [...store.filesInLoading, payload];
             }
         },
-        removeFileInLoading: (store, id) => {
-            store.filesInLoading = store.filesInLoading?.filter((item) => item._id !== id);
-        }
+        removeFileInLoading: (store, id) => store.filesInLoading = store.filesInLoading?.filter((item) => item._id !== id)
     },
     getters: {
         getAuth: (store) => (store.isAuth),
@@ -49,7 +43,7 @@ export default createStore({
     actions: {
         // eslint-disable-next-line no-unused-vars
         login({ commit }, payload) {
-            return axios.post(`${SERVER}/api/auth/login`, payload)
+            return axios.post(`${SERVER_URL}/api/auth/login`, payload)
                 .then(response => {
                     commit("setUser", response.data);
                     localStorage.setItem("token", response.data.token);
@@ -61,25 +55,21 @@ export default createStore({
         },
         auth({ dispatch, commit }) {
             axios.get(
-                `${SERVER}/api/auth/auth`,
+                `${SERVER_URL}/api/auth/auth`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } },
             ).then(response => {
                 commit("setUser", response.data);
                 localStorage.setItem("token", response.data.token);
-            }).catch(() => {
-                dispatch("logout");
-                // localStorage.clear();
-                // window.location.href = '/';
-            });
+            }).catch(() => dispatch("logout"));
         },
         // eslint-disable-next-line no-unused-vars
         registration({ commit }, payload) {
-            return axios.post(`${SERVER}/api/auth/registration`, payload);
+            return axios.post(`${SERVER_URL}/api/auth/registration`, payload);
         },
-        loadFiles({ commit }, { parent }) {
-            commit("setLoading", true);
+        loadFiles({ commit }, { parent, skipLoading }) {
+            !skipLoading && commit("setLoading", true);
             return axios.get(
-                `${SERVER}/api/files` + (parent !== 'root' ? `?parent=${parent}` : ""),
+                `${SERVER_URL}/api/files` + (parent !== 'root' ? `?parent=${parent}` : ""),
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } },
             ).then(response => {
                 const currentDir = response.data.parent;
@@ -89,13 +79,13 @@ export default createStore({
 
                 commit('setFiles', response.data.files);
                 commit('setBreadCrumbs', breadCrumbs);
-                commit("setLoading", false);
+                !skipLoading && commit("setLoading", false);
             })
         },
         searchFiles({ commit }, { searchText }) {
             commit("setLoading", true);
             return axios.get(
-                `${SERVER}/api/files/search?text=${searchText}`,
+                `${SERVER_URL}/api/files/search?text=${searchText}`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } },
             ).then(response => {
                 commit('setFiles', response.data.files);
@@ -104,7 +94,7 @@ export default createStore({
         },
         createDir({ dispatch, commit }, payload) {
             axios.post(
-                `${SERVER}/api/files`,
+                `${SERVER_URL}/api/files`,
                 payload,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } },
             ).then(response => {
@@ -114,10 +104,10 @@ export default createStore({
         },
         deleteFile({ dispatch, commit }, { id, parent }) {
             return axios.delete(
-                `${SERVER}/api/files?id=${id}`,
+                `${SERVER_URL}/api/files?id=${id}`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } },
             ).then(response => {
-                dispatch("loadFiles", { parent });
+                dispatch("loadFiles", { parent, skipLoading: true });
             });
         },
         uploadFile({ dispatch, commit }, { file, parent }) {
@@ -126,7 +116,7 @@ export default createStore({
             formData.append("file", file);
             parent && formData.append("parent", parent);
             return axios.post(
-                `${SERVER}/api/files/upload`,
+                `${SERVER_URL}/api/files/upload`,
                 formData,
                 {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -141,7 +131,7 @@ export default createStore({
                     }
                 },
             ).then(response => {
-                dispatch("loadFiles", { parent })
+                dispatch("loadFiles", { parent, skipLoading: true })
                     .then(() => commit("removeFileInLoading", fakeId));
             });
         },

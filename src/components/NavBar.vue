@@ -6,8 +6,8 @@
     </div>
     <div class="navbar _zone">
       <template v-if="!isAuth">
-        <div v-if="$route.name === 'registration'" class="navbar-button" @click="onNavigateClick('login')">Вход</div>
-        <div v-else class="navbar-button" @click="onNavigateClick('registration')">Регистрация</div>
+        <div v-if="$route.name !== 'login'" class="navbar-button" @click="onNavigateClick('login')">Вход</div>
+        <div v-if="$route.name !== 'registration'" class="navbar-button" @click="onNavigateClick('registration')">Регистрация</div>
       </template>
       <div v-else class="navbar-button" @click="onLogoutClick">Выход</div>
     </div>

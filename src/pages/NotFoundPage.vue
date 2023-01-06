@@ -1,5 +1,5 @@
 <template>
-  <h1>Страница не найдена</h1>
+  <h1 class="not-found-page">Страница не найдена</h1>
 </template>
 
 <script>
@@ -9,5 +9,8 @@ export default {
 </script>
 
 <style scoped>
-
+.not-found-page {
+  display: flex;
+  justify-content: center;
+}
 </style>

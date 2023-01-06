@@ -1,8 +1,10 @@
 <template>
-  <common-form :title="'Авторизация'" @enter-click="onLoginClick">
-    <input type="email" placeholder="Email" v-model="email">
-    <input type="password" placeholder="Password" v-model="password">
-  </common-form>
+  <div class="login-page">
+    <common-form :title="'Авторизация'" @enter-click="onLoginClick">
+      <input type="email" placeholder="Email" v-model="email">
+      <input type="password" placeholder="Password" v-model="password">
+    </common-form>
+  </div>
 </template>
 
 <script>
@@ -43,5 +45,10 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-
+.login-page {
+  display: flex;
+  align-items: center;
+  height: 50%;
+  justify-content: center;
+}
 </style>

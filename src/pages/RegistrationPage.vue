@@ -1,10 +1,12 @@
 <template>
-  <common-form :title="'Регистрация'" @enter-click="onRegisterClick">
-    <input placeholder="Имя" v-model="form.firstName">
-    <input placeholder="Фамилия" v-model="form.lastName">
-    <input type="email" placeholder="Email" v-model="form.email">
-    <input type="password" placeholder="Password" v-model="form.password">
-  </common-form>
+  <div class="registration-page">
+    <common-form :title="'Регистрация'" @enter-click="onRegisterClick">
+      <input placeholder="Имя" v-model="form.firstName">
+      <input placeholder="Фамилия" v-model="form.lastName">
+      <input type="email" placeholder="Email" v-model="form.email">
+      <input type="password" placeholder="Password" v-model="form.password">
+    </common-form>
+  </div>
 </template>
 
 <script>
@@ -47,5 +49,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+.registration-page {
+  display: flex;
+  align-items: center;
+  height: 50%;
+  justify-content: center;
+}
 </style>
