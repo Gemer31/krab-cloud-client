@@ -11,7 +11,10 @@
     <template v-else>
       <span class="table__column-center">{{ date }}</span>
       <span class="table__column-center">{{ size }}</span>
-      <button type="button" @click.prevent.stop="onDeleteClick">Удалить</button>
+      <span class="table__column-center">
+        <img class="table__column-center__button" src="../assets/img/download.svg" @click.prevent.stop="onDownloadClick">
+        <img class="table__column-center__button" src="../assets/img/cross.svg" @click.prevent.stop="onDeleteClick">
+      </span>
     </template>
   </div>
 </template>
@@ -38,10 +41,14 @@ export default defineComponent( {
           .catch((error) => eventBus.$emit('showSnack', { message: error.response.data.message }));
     };
 
+    const onDownloadClick = () => {
+    };
+
     return {
       date,
       size,
 
+      onDownloadClick,
       onDeleteClick,
     }
   }

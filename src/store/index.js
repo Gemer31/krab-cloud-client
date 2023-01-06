@@ -40,6 +40,7 @@ export default createStore({
     },
     getters: {
         getAuth: (store) => (store.isAuth),
+        getUser: (store) => (store.user),
         getFiles: (store) => (store.files),
         getFilesInLoading: (store) => (store.filesInLoading),
         getBreadCrumbs: (store) => (store.breadCrumbs),
@@ -88,6 +89,16 @@ export default createStore({
 
                 commit('setFiles', response.data.files);
                 commit('setBreadCrumbs', breadCrumbs);
+                commit("setLoading", false);
+            })
+        },
+        searchFiles({ commit }, { searchText }) {
+            commit("setLoading", true);
+            return axios.get(
+                `${SERVER}/api/files/search?text=${searchText}`,
+                { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } },
+            ).then(response => {
+                commit('setFiles', response.data.files);
                 commit("setLoading", false);
             })
         },

@@ -1,10 +1,8 @@
 <template>
   <div>
-    <button type="button" @click="popupVisible = true">Создать новую папку</button>
-    <button v-if="breadCrumbs.length" type="button" @click="onBackClick">Назад</button>
-
+    <button class="buttons-bar__btn" type="button" @click="popupVisible = true">Создать папку</button>
     <label class="input-file">
-      <input multiple type="file" @change="fileUploadHandler($event)">
+      <input multiple type="file" :placeholder="asdasd" @change="fileUploadHandler($event)">
       <span>Загрузить файл</span>
     </label>
 
@@ -21,10 +19,10 @@
 </template>
 
 <script>
-import { computed, defineComponent, ref, } from 'vue';
+import { defineComponent, ref, } from 'vue';
 import Popup from "@/components/Popup";
 import { useStore } from "vuex";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import eventBus from "@/eventBus";
 
 export default defineComponent({
@@ -33,12 +31,10 @@ export default defineComponent({
   },
   setup() {
     const $store = useStore();
-    const $router = useRouter();
     const $route = useRoute();
 
     const popupVisible = ref(false);
     const newDirName = ref("");
-    const breadCrumbs = computed(() => $store.getters.getBreadCrumbs);
 
     const onCreateDirClick = () => {
       const file = { name: newDirName.value, type: "dir" };
@@ -59,16 +55,9 @@ export default defineComponent({
       newDirName.value = "";
     }
 
-    const onBackClick = () => {
-      const parent = breadCrumbs.value.length > 1
-          ? breadCrumbs.value[breadCrumbs.value.length - 1].parent
-          : "root";
-      eventBus.$emit('animation-change', { name: "slide-right" });
-      $router.push({ name: "folder", params: { id: parent }});
-    }
-
     const fileUploadHandler = (event) => {
       const files = [...event.target.files];
+      eventBus.$emit('animation-change', { name: "" });
       files.forEach((file) => {
         $store.dispatch("uploadFile", {
           file,
@@ -80,11 +69,9 @@ export default defineComponent({
     return {
       popupVisible,
       newDirName,
-      breadCrumbs,
 
       onClosePopupClick,
       onCreateDirClick,
-      onBackClick,
       fileUploadHandler,
     }
   }
@@ -92,5 +79,10 @@ export default defineComponent({
 </script>
 
 <style lang="less">
-
+.buttons-bar {
+  &__btn {
+    padding: 6px;
+    margin-right: 10px;
+  }
+}
 </style>
