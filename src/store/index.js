@@ -8,11 +8,14 @@ export default createStore({
         return {
             user: null,
             files: [],
+            filesInLoading: [],
             breadCrumbs: [],
             isAuth: false,
+            loading: true,
         }
     },
     mutations: {
+        setLoading: (store, value) => store.loading = value,
         setUser: (store, payload) => {
             store.user = payload?.user;
             store.isAuth = !!payload?.user;
@@ -22,12 +25,25 @@ export default createStore({
         },
         setBreadCrumbs: (store, payload) => {
             store.breadCrumbs = payload;
+        },
+        setFileInLoading: (store, payload) => {
+            const file = store.filesInLoading?.find((item) => payload._id === item._id);
+            if (file) {
+                file.progress = payload.progress;
+            } else {
+                store.filesInLoading = [...store.filesInLoading, payload];
+            }
+        },
+        removeFileInLoading: (store, id) => {
+            store.filesInLoading = store.filesInLoading?.filter((item) => item._id !== id);
         }
     },
     getters: {
         getAuth: (store) => (store.isAuth),
         getFiles: (store) => (store.files),
+        getFilesInLoading: (store) => (store.filesInLoading),
         getBreadCrumbs: (store) => (store.breadCrumbs),
+        getLoading: (store) => store.loading,
     },
     actions: {
         // eslint-disable-next-line no-unused-vars
@@ -60,7 +76,8 @@ export default createStore({
             return axios.post(`${SERVER}/api/auth/registration`, payload);
         },
         loadFiles({ commit }, { parent }) {
-            axios.get(
+            commit("setLoading", true);
+            return axios.get(
                 `${SERVER}/api/files` + (parent !== 'root' ? `?parent=${parent}` : ""),
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } },
             ).then(response => {
@@ -71,6 +88,7 @@ export default createStore({
 
                 commit('setFiles', response.data.files);
                 commit('setBreadCrumbs', breadCrumbs);
+                commit("setLoading", false);
             })
         },
         createDir({ dispatch, commit }, payload) {
@@ -83,38 +101,38 @@ export default createStore({
                 dispatch("loadFiles", { parent: payload.parent || "root" });
             })
         },
-        uploadFile({ dispatch, commit }, payload) {
-            const file = payload.file;
-            const dirId = payload.dirId;
-
+        deleteFile({ dispatch, commit }, { id, parent }) {
+            return axios.delete(
+                `${SERVER}/api/files?id=${id}`,
+                { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } },
+            ).then(response => {
+                dispatch("loadFiles", { parent });
+            });
+        },
+        uploadFile({ dispatch, commit }, { file, parent }) {
             const formData = new FormData();
+            const fakeId = file.name;
             formData.append("file", file);
-
-            if (dirId) {
-                formData.append("parent", dirId);
-            }
-            axios.post(
+            parent && formData.append("parent", parent);
+            return axios.post(
                 `${SERVER}/api/files/upload`,
                 formData,
                 {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                     // eslint-disable-next-line no-unused-vars
                     onUploadProgress: progressEvent => {
-                        // const totalLength = progressEvent.lengthComputable
-                        //     ? progressEvent.total
-                        //     : progressEvent.target.getResponseHeader('content-length') || progressEvent.target.getResponseHeader("x-decompressed-content-length");
-                        //
-                        // console.log(totalLength);
-                        // if (totalLength) {
-                        //     let progress = Math.round((progressEvent.loaded*100) / totalLength);
-                        //     console.log(progress);
-                        // }
+                        console.log(Math.round(progressEvent.loaded / progressEvent.total * 100));
+                        commit("setFileInLoading", {
+                            _id: fakeId,
+                            name: file.name,
+                            progress: Math.round(progressEvent.loaded / progressEvent.total * 100),
+                        });
                     }
                 },
             ).then(response => {
-                commit('setFiles', response.data.files);
-                dispatch("loadFiles", { parent: payload.parent });
-            })
+                dispatch("loadFiles", { parent })
+                    .then(() => commit("removeFileInLoading", fakeId));
+            });
         },
     }
 })

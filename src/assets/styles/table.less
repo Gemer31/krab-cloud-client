@@ -9,10 +9,26 @@
 
   &__row {
     display: grid;
-    grid-template-columns: 50px 3fr 1fr 1fr;
+    grid-template-columns: 50px 3fr 1fr 1fr 1fr;
     grid-column-gap: 10px;
     border-bottom: 1px solid;
     padding: 10px;
+
+    &._in-progress {
+      grid-template-columns: 50px 3fr 3fr;
+    }
+
+    &-progress {
+      width: 100%;
+      align-items: center;
+      display: flex;
+      accent-color: @main;
+
+      & progress {
+        width: 100%;
+        margin-right: 8px;
+      }
+    }
 
     &-file {
       cursor: pointer;

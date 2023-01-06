@@ -25,6 +25,7 @@ import { computed, defineComponent, ref, } from 'vue';
 import Popup from "@/components/Popup";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
+import eventBus from "@/eventBus";
 
 export default defineComponent({
   components: {
@@ -62,6 +63,7 @@ export default defineComponent({
       const parent = breadCrumbs.value.length > 1
           ? breadCrumbs.value[breadCrumbs.value.length - 1].parent
           : "root";
+      eventBus.$emit('animation-change', { name: "slide-right" });
       $router.push({ name: "folder", params: { id: parent }});
     }
 
@@ -70,7 +72,7 @@ export default defineComponent({
       files.forEach((file) => {
         $store.dispatch("uploadFile", {
           file,
-          parent: breadCrumbs.value.length ? breadCrumbs.value[breadCrumbs.value.length - 1].parent : null,
+          parent: $route?.params.id,
         });
       })
     };

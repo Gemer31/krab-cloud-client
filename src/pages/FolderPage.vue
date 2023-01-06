@@ -54,7 +54,7 @@ export default defineComponent({
       files.forEach((file) => {
         $store.dispatch("uploadFile", {
           file,
-          parent: breadCrumbs.value.length ? breadCrumbs.value[breadCrumbs.value.length - 1].parent : null,
+          parent: $route?.params.id,
         });
       })
     };
