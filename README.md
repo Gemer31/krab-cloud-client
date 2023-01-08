@@ -1,24 +1,15 @@
-# client
+# KrabCloud
 
-## Project setup
-```
-npm install
-```
+KrabCloud - cloud disk for download, upload, delete user files.
+App uses:
+Frontend - Vue.js, Vuex
+Backend - Node.js, Express, MongoDB ([repo](https://github.com/Gemer31/krab-cloud-server))
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+Authorization and create dir
+![Alt Text](./src/assets/gifs/Auth-and-create-dir.gif)
 
-### Compiles and minifies for production
-```
-npm run build
-```
+Upload and delete files
+![Alt Text](./src/assets/gifs/Upload-file.gif)
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Search files
+![Alt Text](./src/assets/gifs/Search.gif)
